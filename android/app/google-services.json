@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "931676349713",
+    "project_id": "cannabis-ff4bf",
+    "storage_bucket": "cannabis-ff4bf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:931676349713:android:881f4342a18c814b9998b0",
+        "android_client_info": {
+          "package_name": "com.example.rakcha"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArLmqZ9pgOmbjMZ6O8LCzmKMn2h3M9_78"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
