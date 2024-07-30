@@ -377,9 +377,9 @@ DateTime? parseDate(String? dateString) {
     }
   }
   return null;
-}*/
-import 'dart:developer';
+}*/import 'dart:developer';
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:collection/collection.dart';
 import 'package:excel/excel.dart';
@@ -388,95 +388,93 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
+
 import '../../features/home/data/model/Plante.dart';
 
 Future<void> exportToExcel(BuildContext context, Plant plant) async {
   bool permissionGranted = false;
 
-  if (await Permission.storage.request().isGranted) {
-    permissionGranted = true;
-  } else if (await Permission.manageExternalStorage.request().isGranted) {
+  // Request permissions
+  if (await Permission.storage.request().isGranted || 
+      await Permission.manageExternalStorage.request().isGranted) {
     permissionGranted = true;
   } else if (await Permission.storage.isPermanentlyDenied) {
     await openAppSettings();
   }
 
   if (permissionGranted) {
-    Directory? directory = await getApplicationDocumentsDirectory(); // Adjusted for more visibility
-    if (directory != null) {
-      String filePath = '${directory.path}/Plantes.xlsx';
-
-      Excel excel;
-      Sheet sheetObject;
-      bool identifiantExists = false;
-
-      if (File(filePath).existsSync()) {
-        var bytes = File(filePath).readAsBytesSync();
-        excel = Excel.decodeBytes(bytes);
-        sheetObject = excel['Sheet1'];
-
-        for (var row in sheetObject.rows) {
-          if (row[0]?.value.toString() == plant.identifiant) {
-            log("identifiant: ${row[0]?.value}.");
-            identifiantExists = true;
-            break;
-          }
+    Directory? directory;
+    if (Platform.isAndroid) {
+      directory = await getExternalStorageDirectory();
+      // Handle Android specific path
+      String newPath = "";
+      List<String> folders = directory!.path.split("/");
+      for (int i = 1; i < folders.length; i++) {
+        String folder = folders[i];
+        if (folder != "Android") {
+          newPath += "/$folder";
+        } else {
+          break;
         }
-      } else {
-        excel = Excel.createExcel();
-        sheetObject = excel['Sheet1'];
-        sheetObject.appendRow([
-          "Identifiant",
-          "Santé",
-          "Date Arrivée",
-          "Stade",
-          "Entreposage",
-          "Actif/Inactif",
-          "Description",
-          "Date Retrait",
-          "Note",
-          "Raison Retrait",
-          "Provenance",
-          "Responsable"
-        ]);
       }
+      newPath = "$newPath/Download";
+      directory = Directory(newPath);
+    } else if (Platform.isIOS) {
+      directory = await getApplicationDocumentsDirectory();
+    }
 
-      if (!identifiantExists) {
-        sheetObject.appendRow([
-          plant.identifiant,
-          plant.sante,
-          plant.dateArrive.toIso8601String(),
-          plant.stade,
-          plant.entrosposage,
-          plant.activ_inactiv,
-          plant.description,
-          plant.dateRetrait?.toIso8601String(),
-          plant.note,
-          plant.raisonRetrait,
-          plant.provenance,
-          plant.responsable,
-        ]);
+    if (!directory!.existsSync()) {
+      directory.createSync(recursive: true);
+    }
 
-        var fileBytes = excel.encode();
-        File(filePath)
-          ..createSync(recursive: true)
-          ..writeAsBytesSync(fileBytes!);
+    String filePath = '${directory.path}/Plantes.xlsx';
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Data exported to Excel: $filePath')),
-        );
+    Excel excel;
+    Sheet sheetObject;
+    bool identifiantExists = false;
 
-        log('Excel file saved at: $filePath');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  'Identifiant already exists in Excel: ${plant.identifiant}')),
-        );
+    if (File(filePath).existsSync()) {
+      var bytes = File(filePath).readAsBytesSync();
+      excel = Excel.decodeBytes(bytes);
+      sheetObject = excel['Sheet1'];
+
+      for (var row in sheetObject.rows) {
+        if (row[0]?.value.toString() == plant.identifiant) {
+          log("identifiant: ${row[0]?.value}.");
+          identifiantExists = true;
+          break;
+        }
       }
     } else {
+      excel = Excel.createExcel();
+      sheetObject = excel['Sheet1'];
+      sheetObject.appendRow([
+        "Identifiant", "Santé", "Date Arrivée", "Stade", "Entreposage",
+        "Actif/Inactif", "Description", "Date Retrait", "Note", "Raison Retrait",
+        "Provenance", "Responsable"
+      ]);
+    }
+
+    if (!identifiantExists) {
+      sheetObject.appendRow([
+        plant.identifiant, plant.sante, plant.dateArrive.toIso8601String(),
+        plant.stade, plant.entrosposage, plant.activ_inactiv, plant.description,
+        plant.dateRetrait?.toIso8601String(), plant.note, plant.raisonRetrait,
+        plant.provenance, plant.responsable,
+      ]);
+
+      var fileBytes = excel.encode();
+      File(filePath)
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(fileBytes!);
+
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to access directory')),
+        SnackBar(content: Text('Data exported to Excel: $filePath')),
+      );
+      log('Excel file saved at: $filePath');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Identifiant already exists in Excel: ${plant.identifiant}')),
       );
     }
   } else {
@@ -488,7 +486,7 @@ Future<void> exportToExcel(BuildContext context, Plant plant) async {
 
 
 Future<void> importFromExcel(BuildContext context) async {
-   FilePickerResult? result = await FilePicker.platform.pickFiles(
+  FilePickerResult? result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
     allowedExtensions: ['xlsx'],
   );
@@ -501,11 +499,8 @@ Future<void> importFromExcel(BuildContext context) async {
   }
 
   String filePath = result.files.single.path!;
-  log('Picked file path: $filePath'); // Log file path to check where the file is
-
-  try {
-    var bytes = File(filePath).readAsBytesSync();
-    var excel = Excel.decodeBytes(bytes);
+  var bytes = File(filePath).readAsBytesSync();
+  var excel = Excel.decodeBytes(bytes);
 
   var sheet = excel['Sheet1'];
   List<Plant> plants = [];
@@ -589,8 +584,7 @@ Future<void> importFromExcel(BuildContext context) async {
         } else {
           bool exists = await identifiantExistsInFirestore(identifiant);
           if (exists) {
-            identifiant =
-                await generateUniqueIdentifiant(identifiant.split('.')[0]);
+            identifiant = await generateUniqueIdentifiant(identifiant.split('.')[0]);
           }
         }
 
@@ -622,13 +616,8 @@ Future<void> importFromExcel(BuildContext context) async {
       SnackBar(content: Text('Error: ${e.toString()}')),
     );
   }
-  } catch (e) {
-    log('Error reading file: $e');
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Error: ${e.toString()}')),
-    );
-  }
 }
+
 
 Future<String> generateUniqueIdentifiant(String baseIdentifiant) async {
   int num = 1;

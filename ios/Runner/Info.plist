@@ -4,6 +4,8 @@
 <dict>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<true/>
+	<key>NSDocumentsFolderUsageDescription</key>
+	<string>Your app needs access to the Documents folder to save and load files.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs access to the camera.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
