@@ -1,4 +1,3 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:rakcha/app.dart';
@@ -11,30 +10,18 @@ void main() async {
   bool? initRoot = await getInitRoot();
 
   if (initRoot == null) {
-    runApp(DevicePreview(
-      enabled: true,
-      tools: const [
-        ...DevicePreview.defaultTools,
-      ],
-      builder: (context) => const MyApp(initroot: false),
-    ));
+    runApp(
+      MyApp(initroot: false),
+    );
   } else {
     if (initRoot == false) {
-      runApp(DevicePreview(
-        enabled: true,
-        tools: const [
-          ...DevicePreview.defaultTools,
-        ],
-        builder: (context) => const MyApp(initroot: false),
-      ));
+      runApp(
+        MyApp(initroot: false),
+      );
     } else {
-      runApp(DevicePreview(
-        enabled: true,
-        tools: const [
-          ...DevicePreview.defaultTools,
-        ],
-        builder: (context) => const MyApp(initroot: true),
-      ));
+      runApp(
+        MyApp(initroot: true),
+      );
     }
   }
 }
