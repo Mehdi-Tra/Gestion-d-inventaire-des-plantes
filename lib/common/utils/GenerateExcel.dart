@@ -395,7 +395,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../features/home/data/model/Plante.dart';
 
-Future<void> exportToExcel(BuildContext context, Plant plant) async {
+/*Future<void> exportToExcel(BuildContext context, Plant plant) async {
   bool permissionGranted = false;
 
   // Request permissions
@@ -423,7 +423,7 @@ Future<void> exportToExcel(BuildContext context, Plant plant) async {
       }
       newPath = "$newPath/Download";
       directory = Directory(newPath);
-      
+
     } else if (Platform.isIOS) {
       directory = await getApplicationDocumentsDirectory();
     }
@@ -504,6 +504,141 @@ Future<void> exportToExcel(BuildContext context, Plant plant) async {
   } else {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Storage permission denied')),
+    );
+  }
+}*/
+
+
+Future<void> exportToExcel(BuildContext context, Plant plant) async {
+  try {
+    bool permissionGranted = false;
+
+    // Request permissions
+    if (await Permission.storage.request().isGranted ||
+        await Permission.manageExternalStorage.request().isGranted) {
+      permissionGranted = true;
+    } else if (await Permission.storage.isPermanentlyDenied) {
+      await openAppSettings();
+    }
+
+    if (permissionGranted) {
+      Directory? directory;
+      if (Platform.isAndroid) {
+        directory = await getExternalStorageDirectory();
+        // Handle Android specific path
+        String newPath = "";
+        List<String> folders = directory!.path.split("/");
+        for (int i = 1; i < folders.length; i++) {
+          String folder = folders[i];
+          if (folder != "Android") {
+            newPath += "/$folder";
+          } else {
+            break;
+          }
+        }
+        newPath = "$newPath/Download";
+        directory = Directory(newPath);
+        
+        if (!directory.existsSync()) {
+          directory.createSync(recursive: true);
+        }
+
+        String filePath = '${directory.path}/Plantes.xlsx';
+        await saveExcelFile(context, plant, filePath);
+
+      } else if (Platform.isIOS) {
+        directory = await getApplicationDocumentsDirectory();
+        String filePath = '${directory.path}/Plantes.xlsx';
+        await saveExcelFile(context, plant, filePath);
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Storage permission denied')),
+      );
+    }
+  } catch (e, stackTrace) {
+    log('Error in exportToExcel: $e');
+    log('Stack trace: $stackTrace');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('An error occurred during export')),
+    );
+  }
+}
+
+Future<void> saveExcelFile(BuildContext context, Plant plant, String filePath) async {
+  try {
+    Excel excel;
+    Sheet sheetObject;
+    bool identifiantExists = false;
+
+    if (File(filePath).existsSync()) {
+      var bytes = File(filePath).readAsBytesSync();
+      excel = Excel.decodeBytes(bytes);
+      sheetObject = excel['Sheet1'];
+
+      for (var row in sheetObject.rows) {
+        if (row[0]?.value.toString() == plant.identifiant) {
+          log("identifiant: ${row[0]?.value}.");
+          identifiantExists = true;
+          break;
+        }
+      }
+    } else {
+      excel = Excel.createExcel();
+      sheetObject = excel['Sheet1'];
+      sheetObject.appendRow([
+        "Identifiant",
+        "Santé",
+        "Date Arrivée",
+        "Stade",
+        "Entreposage",
+        "Actif/Inactif",
+        "Description",
+        "Date Retrait",
+        "Note",
+        "Raison Retrait",
+        "Provenance",
+        "Responsable"
+      ]);
+    }
+
+    if (!identifiantExists) {
+      sheetObject.appendRow([
+        plant.identifiant,
+        plant.sante,
+        plant.dateArrive.toIso8601String(),
+        plant.stade,
+        plant.entrosposage,
+        plant.activ_inactiv,
+        plant.description,
+        plant.dateRetrait?.toIso8601String(),
+        plant.note,
+        plant.raisonRetrait,
+        plant.provenance,
+        plant.responsable,
+      ]);
+
+      var fileBytes = excel.encode();
+      File(filePath)
+        ..createSync(recursive: true)
+        ..writeAsBytesSync(fileBytes!);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Data exported to Excel: $filePath')),
+      );
+      log('Excel file saved at: $filePath');
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                'Identifiant already exists in Excel: ${plant.identifiant}')),
+      );
+    }
+  } catch (e, stackTrace) {
+    log('Error in saveExcelFile: $e');
+    log('Stack trace: $stackTrace');
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('An error occurred while saving the file')),
     );
   }
 }
