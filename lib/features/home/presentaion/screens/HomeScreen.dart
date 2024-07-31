@@ -234,7 +234,7 @@ class _HomescreenState extends State<Homescreen> {
     return Container(
       height: MediaQuery.of(context).size.height * 0.05,
       width: MediaQuery.of(context).size.width * 0.8,
-      margin: const EdgeInsets.only(right: 16),
+      //margin: const EdgeInsets.only(right: 16),
       child: SearchAnchor(
         builder: (BuildContext context, SearchController controller) {
           return SearchBar(
