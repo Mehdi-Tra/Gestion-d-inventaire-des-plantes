@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -148,7 +149,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ),
             trailing: [
               if (!_visibleClearIcon)
-                Tooltip(
+                if (!Platform.isWindows)Tooltip(
                   message: "QR Scanner",
                   child: IconButton(
                     onPressed: () async {

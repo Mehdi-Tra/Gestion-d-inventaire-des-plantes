@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -180,7 +181,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
             trailing: [
               if (!_visibleClearIcon)
                 if (!_visibleClearIcon)
-                  Tooltip(
+                  if (!Platform.isWindows)Tooltip(
                     message: "QR Scanner",
                     child: IconButton(
                       onPressed: () async {
