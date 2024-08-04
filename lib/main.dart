@@ -3,9 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:rakcha/app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'config/firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   bool? initRoot = await getInitRoot();
 
