@@ -15,16 +15,16 @@ void main() async {
 
   if (initRoot == null) {
     runApp(
-      MyApp(initroot: false),
+      const MyApp(initroot: false),
     );
   } else {
     if (initRoot == false) {
       runApp(
-        MyApp(initroot: false),
+        const MyApp(initroot: false),
       );
     } else {
       runApp(
-        MyApp(initroot: true),
+        const MyApp(initroot: true),
       );
     }
   }
