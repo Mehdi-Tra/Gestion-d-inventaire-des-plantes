@@ -546,7 +546,7 @@ Future<void> exportToExcel(BuildContext context, Plant plant) async {
         String filePath = '${directory.path}/Plantes.xlsx';
         await saveExcelFile(context, plant, filePath);
 
-      } else if (Platform.isIOS) {
+      } else if (Platform.isIOS || Platform.isWindows) {
         directory = await getApplicationDocumentsDirectory();
         String filePath = '${directory.path}/Plantes.xlsx';
         await saveExcelFile(context, plant, filePath);
