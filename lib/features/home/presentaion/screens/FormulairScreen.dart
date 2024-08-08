@@ -332,8 +332,8 @@ class _FormulairScreenState extends State<Formulairscreen> {
                   .collection("plante")
                   .doc()
                   .set(plant.toFirestore());
-              await addHistoryEntry("Plante ajouter",
-                  "Plant avec ID ${plant.identifiant} est ajouter");
+              await addHistoryEntry("Plante ajoutée",
+                  "Plant avec ID ${plant.identifiant} est ajouté");
               await addHistoryForPlant(plant.identifiant,
                   "La plante ${plant.identifiant} a été créé");
               generateQRCode(context, plant, () {
@@ -397,49 +397,116 @@ class _FormulairScreenState extends State<Formulairscreen> {
                   responsable: _chosenValueetreponsable,
                 );
 
-                await _firestore.runTransaction((transaction) async {
-                  DocumentSnapshot freshSnapshot =
-                      await transaction.get(docRef);
+                // try {
+                //   log("Starting Firestore transaction...");
+                //   await _firestore.runTransaction((transaction) async {
+                //     log("Fetching document...");
+                //     DocumentSnapshot freshSnapshot =
+                //         await transaction.get(docRef);
+
+                //     if (freshSnapshot.exists) {
+                //       log("Document exists. Updating document...");
+                //       transaction.update(docRef, newPlant.toFirestore());
+                //       log("Document updated successfully.");
+                //     } else {
+                //       log("Document does not exist.");
+                //     }
+                //   });
+                //   log("Transaction completed.");
+                // } catch (e) {
+                //   log("Transaction failed with error: $e");
+                // }
+
+                try {
+                  log("Fetching document...");
+                  DocumentSnapshot freshSnapshot = await docRef.get();
+
                   if (freshSnapshot.exists) {
-                    transaction.update(docRef, newPlant.toFirestore());
+                    log("Document exists. Updating document...");
+                    await docRef.update(newPlant.toFirestore());
+                    log("Document updated successfully.");
                   } else {
-                    log('Le document n\'existe pas');
+                    log("Document does not exist.");
                   }
-                });
+                } catch (e) {
+                  log("Transaction failed with error: $e");
+                }
 
                 bool _ismodified = false;
                 List<String> changedFields = [];
                 newPlant.toFirestore().forEach((key, value) {
+                  // if (currentData[key] != value) {
+                  //   _ismodified = true;
+                  //   if (key == "dateRetrait" && currentData[key] != null) {
+                  //     changedFields
+                  //         .add("$key: ${(value as Timestamp).toDate()} (Modifier)");
+                  //   } else {
+                  //     changedFields.add(
+                  //         "$key: ${currentData[key]} => $value (Modifier)");
+                  //   }
+                  // } else {
+                  //   if (key == "dateArrive" ||
+                  //       (key == "dateRetrait" && currentData[key] != null)) {
+                  //     log("value: $value\n curr: ${currentData[key]}\n key: $key\n bool: ${key == "dateRetrait" && currentData[key] != null}");
+                  //     changedFields
+                  //         .add("$key: ${(value as Timestamp).toDate()}");
+                  //   } else {
+                  //     changedFields.add("$key: ${currentData[key]}");
+                  //   }
+                  // }
+
                   if (currentData[key] != value) {
                     _ismodified = true;
-                    changedFields.add("$key: ${currentData[key]} => $value");
-                  } else {
-                    if (key == "dateArrive" ||
-                        (key == "raisonRetrait" && currentData[key] != null)) {
-                      changedFields.add(
-                          "$key: ${(currentData[key] as Timestamp).toDate()}");
+
+                    // Vérifie si la clé est "dateRetrait"
+                    if (key == "dateRetrait") {
+                      // Vérifie le type de la valeur
+                      if (value is Timestamp) {
+                        // Ajoute la date au format DateTime pour les changements de "dateRetrait"
+                        changedFields.add(
+                            "$key: ${(value as Timestamp).toDate()} (Modifier)");
+                      } else {
+                        // Log si la valeur n'est pas un Timestamp
+                        log("La valeur pour $key n'est pas un Timestamp: $value");
+                        changedFields.add(
+                            "$key: ${currentData[key]} => $value (Modifier)");
+                      }
                     } else {
+                      // Pour les autres changements
+                      changedFields.add(
+                          "$key: ${currentData[key]} => $value (Modifier)");
+                    }
+                  } else {
+                    // Si les valeurs ne sont pas modifiées
+                    if (key == "dateArrive" ||
+                        (key == "dateRetrait" && currentData[key] != null)) {
+                      if (currentData[key] is Timestamp) {
+                        // Ajoute la date au format DateTime pour "dateArrive" ou "dateRetrait"
+                        changedFields.add(
+                            "$key: ${(currentData[key] as Timestamp).toDate()}");
+                      } else {
+                        // Log si la valeur n'est pas un Timestamp
+                        log("La valeur actuelle pour $key n'est pas un Timestamp: ${currentData[key]}");
+                        changedFields.add("$key: ${currentData[key]}");
+                      }
+                    } else {
+                      // Ajoute simplement la valeur non modifiée
                       changedFields.add("$key: ${currentData[key]}");
                     }
                   }
-
-                  // if (currentData[key] != value) {
-                  //   changedFields.add("$key: ${currentData[key]} => $value");
-                  // }
                 });
 
                 if (changedFields.isNotEmpty && _ismodified) {
-                  String description =
-                      "Champs modifiés : ${changedFields.join(',\n')}.";
+                  String description = "\n${changedFields.join(',\n')}.";
 
                   if (_inactivActivController.text == "1") {
                     await addHistoryEntry(
-                      "Plante Modifiée",
+                      "Modification de capacité",
                       "La plante avec l'ID ${newPlant.identifiant} a été modifiée.",
                     );
 
                     await addHistoryForPlant(newPlant.identifiant,
-                        "La plante ${newPlant.identifiant} a été modifiée. $description, de pui le responsable: ${newPlant.responsable}");
+                        "La plante ${newPlant.identifiant} a été modifiée. $description.\npar le le responsable: ${newPlant.responsable}");
                   } else if (_inactivActivController.text == "0") {
                     await addHistoryEntry(
                       "Plante Archivée",
@@ -447,7 +514,7 @@ class _FormulairScreenState extends State<Formulairscreen> {
                     );
 
                     await addHistoryForPlant(newPlant.identifiant,
-                        "La plante ${newPlant.identifiant} a été archivée avec la raison ${newPlant.raisonRetrait}. $description de pui le responsable: ${newPlant.responsable}");
+                        "La plante ${newPlant.identifiant} a été archivée avec la raison ${newPlant.raisonRetrait}. $description par le le responsable: ${newPlant.responsable}");
                   }
                 }
 
@@ -649,7 +716,7 @@ class _FormulairScreenState extends State<Formulairscreen> {
           onFocusChange: () {},
           controller: _descriptionControll,
           defaultValue: null,
-          label: "Discription",
+          label: "Description",
         ),
       ),
     );

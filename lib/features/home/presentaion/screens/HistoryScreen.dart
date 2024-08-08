@@ -106,6 +106,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             },
             icon: Icon(
               Icons.account_circle_outlined,
+              size: 32,
               color: Theme.of(context).iconTheme.color,
             ),
           ),

@@ -138,6 +138,7 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
             },
             icon: Icon(
               Icons.account_circle_outlined,
+              size: 32,
               color: Theme.of(context).iconTheme.color,
             ),
           ),
@@ -148,110 +149,112 @@ class _ArchiveScreenState extends State<ArchiveScreen> {
   }
 
   Widget searchBar() {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.05,
-      width: MediaQuery.of(context).size.width * 0.8,
-      margin: const EdgeInsets.only(right: 16),
-      child: SearchAnchor(
-        builder: (BuildContext context, SearchController controller) {
-          return SearchBar(
-            backgroundColor: WidgetStateProperty.all(MyColors.secondBackground),
-            padding: const WidgetStatePropertyAll<EdgeInsets>(
-              EdgeInsets.symmetric(horizontal: 16.0),
-            ),
-            textStyle: WidgetStateProperty.all<TextStyle?>(
-                Theme.of(context).textTheme.headlineSmall),
-            hintText: "Cherche une Plante",
-            hintStyle: WidgetStateProperty.all<TextStyle?>(
-                Theme.of(context).textTheme.headlineSmall),
-            controller: controller,
-            onTap: () {},
-            onChanged: (value) {
-              setState(() {
-                _searchQuery = value;
-                _visibleClearIcon = value.isNotEmpty;
-                filterPlants();
-              });
-              log("$_visibleClearIcon");
-            },
-            leading: Icon(
-              Icons.search,
-              color: Theme.of(context).scaffoldBackgroundColor,
-            ),
-            trailing: [
-              if (!_visibleClearIcon)
+    return Expanded(
+      child: Container(
+        // height: MediaQuery.of(context).size.height * 0.05,
+        // width: MediaQuery.of(context).size.width * 0.8,
+        // margin: const EdgeInsets.only(right: 16),
+        child: SearchAnchor(
+          builder: (BuildContext context, SearchController controller) {
+            return SearchBar(
+              backgroundColor: WidgetStateProperty.all(MyColors.secondBackground),
+              padding: const WidgetStatePropertyAll<EdgeInsets>(
+                EdgeInsets.symmetric(horizontal: 16.0),
+              ),
+              textStyle: WidgetStateProperty.all<TextStyle?>(
+                  Theme.of(context).textTheme.headlineSmall),
+              hintText: "Cherche une Plante",
+              hintStyle: WidgetStateProperty.all<TextStyle?>(
+                  Theme.of(context).textTheme.headlineSmall),
+              controller: controller,
+              onTap: () {},
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                  _visibleClearIcon = value.isNotEmpty;
+                  filterPlants();
+                });
+                log("$_visibleClearIcon");
+              },
+              leading: Icon(
+                Icons.search,
+                color: Theme.of(context).scaffoldBackgroundColor,
+              ),
+              trailing: [
                 if (!_visibleClearIcon)
-                  if (!Platform.isWindows)Tooltip(
-                    message: "QR Scanner",
+                  if (!_visibleClearIcon)
+                    if (!Platform.isWindows)Tooltip(
+                      message: "QR Scanner",
+                      child: IconButton(
+                        onPressed: () async {
+                          String qrResult = await scanQrCode();
+      
+                          if (qrResult != '-1') {
+                            _searchQuery = qrResult;
+                          } else {
+                            log(qrResult);
+                          }
+      
+                          QuerySnapshot<Map<String, dynamic>> fetchedPlant =
+                              await _firestore
+                                  .collection("plante")
+                                  .where("identifiant", isEqualTo: _searchQuery)
+                                  .get();
+      
+                          if (fetchedPlant.docs.isNotEmpty) {
+                            Plant plant = Plant.fromFirestore(
+                                fetchedPlant.docs.first.data());
+                            widget.changeCurrentScreen(Formulairscreen(
+                              scaffoldKey: widget.scaffoldKey,
+                              isModifie: true,
+                              changeCurrentScreen: widget.changeCurrentScreen,
+                              plant: plant,
+                            ));
+                          }
+                        },
+                        icon: Icon(
+                          Icons.qr_code_2_outlined,
+                          color: Theme.of(context).scaffoldBackgroundColor,
+                        ),
+                      ),
+                    ),
+                if (_visibleClearIcon)
+                  Tooltip(
+                    message: "Clear",
                     child: IconButton(
-                      onPressed: () async {
-                        String qrResult = await scanQrCode();
-
-                        if (qrResult != '-1') {
-                          _searchQuery = qrResult;
-                        } else {
-                          log(qrResult);
-                        }
-
-                        QuerySnapshot<Map<String, dynamic>> fetchedPlant =
-                            await _firestore
-                                .collection("plante")
-                                .where("identifiant", isEqualTo: _searchQuery)
-                                .get();
-
-                        if (fetchedPlant.docs.isNotEmpty) {
-                          Plant plant = Plant.fromFirestore(
-                              fetchedPlant.docs.first.data());
-                          widget.changeCurrentScreen(Formulairscreen(
-                            scaffoldKey: widget.scaffoldKey,
-                            isModifie: true,
-                            changeCurrentScreen: widget.changeCurrentScreen,
-                            plant: plant,
-                          ));
-                        }
+                      onPressed: () {
+                        setState(() {
+                          controller.clear();
+                          _searchQuery = '';
+                          _visibleClearIcon = false;
+                          filterPlants();
+                        });
+                        log("$_visibleClearIcon");
                       },
                       icon: Icon(
-                        Icons.qr_code_2_outlined,
+                        Icons.clear_outlined,
                         color: Theme.of(context).scaffoldBackgroundColor,
                       ),
                     ),
                   ),
-              if (_visibleClearIcon)
-                Tooltip(
-                  message: "Clear",
-                  child: IconButton(
-                    onPressed: () {
-                      setState(() {
-                        controller.clear();
-                        _searchQuery = '';
-                        _visibleClearIcon = false;
-                        filterPlants();
-                      });
-                      log("$_visibleClearIcon");
-                    },
-                    icon: Icon(
-                      Icons.clear_outlined,
-                      color: Theme.of(context).scaffoldBackgroundColor,
-                    ),
-                  ),
-                ),
-            ],
-          );
-        },
-        suggestionsBuilder:
-            (BuildContext context, SearchController controller) {
-          return List<ListTile>.generate(5, (int index) {
-            final String item = 'item $index';
-            return ListTile(
-              title: Text(item),
-              onTap: () {
-                setState(() {
-                  controller.closeView(item);
-                });
-              },
+              ],
             );
-          });
-        },
+          },
+          suggestionsBuilder:
+              (BuildContext context, SearchController controller) {
+            return List<ListTile>.generate(5, (int index) {
+              final String item = 'item $index';
+              return ListTile(
+                title: Text(item),
+                onTap: () {
+                  setState(() {
+                    controller.closeView(item);
+                  });
+                },
+              );
+            });
+          },
+        ),
       ),
     );
   }

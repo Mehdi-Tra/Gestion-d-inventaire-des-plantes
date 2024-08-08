@@ -162,8 +162,8 @@ class _HomescreenState extends State<Homescreen> {
             Expanded(
               child: Row(
                 children: [
-                  Expanded(flex: 10, child: listPlantFireStore()),
-                  Expanded(flex: 1, child: alphabetScrollbar()),
+                  Expanded(child: listPlantFireStore()),
+                  if(!Platform.isWindows)alphabetScrollbar(),
                 ],
               ),
             ),
@@ -175,7 +175,8 @@ class _HomescreenState extends State<Homescreen> {
 
   Widget alphabetScrollbar() {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 20),
+      width: 32,
+      margin: const EdgeInsets.symmetric(vertical: 16),
       child: ListView.builder(
         itemCount: alphabet.length,
         itemBuilder: (context, index) {
@@ -210,7 +211,7 @@ class _HomescreenState extends State<Homescreen> {
       width: double.infinity,
       child: Row(
         mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           IconButton(
             onPressed: () {
@@ -222,10 +223,11 @@ class _HomescreenState extends State<Homescreen> {
             },
             icon: Icon(
               Icons.account_circle_outlined,
+              size: 32,
               color: Theme.of(context).iconTheme.color,
             ),
           ),
-          searchBar(),
+          Expanded(child: searchBar()),
         ],
       ),
     );
@@ -233,8 +235,8 @@ class _HomescreenState extends State<Homescreen> {
 
   Widget searchBar() {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.05,
-      width: MediaQuery.of(context).size.width * 0.8,
+      // height: MediaQuery.of(context).size.height * 0.05,
+      // width: MediaQuery.of(context).size.width * 0.8,
       //margin: const EdgeInsets.only(right: 16),
       child: SearchAnchor(
         builder: (BuildContext context, SearchController controller) {

@@ -1,5 +1,3 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:rakcha/common/theme/app_theme.dart';
 
@@ -21,8 +19,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.lightTheme,
-      darkTheme: AppTheme.darkTheme,
+      theme: AppTheme.darkTheme,
       initialRoute: widget.initroot ? '/lobby':'/login',
       routes: {
         '/lobby': (context) => const LobbyScreen(),

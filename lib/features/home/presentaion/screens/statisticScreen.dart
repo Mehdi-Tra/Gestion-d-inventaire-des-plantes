@@ -147,8 +147,8 @@ class _StatisticScreenState extends State<StatisticScreen> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
-        height: MediaQuery.of(context).size.width * 0.8,
-        width: MediaQuery.of(context).size.width * 0.8,
+        height: 512,
+        width: 512,
         child: SfCircularChart(
           title: ChartTitle(
               text: 'Espace',
@@ -212,8 +212,8 @@ class _StatisticScreenState extends State<StatisticScreen> {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: SizedBox(
-        height: MediaQuery.of(context).size.width * 0.8,
-        width: MediaQuery.of(context).size.width * 0.8,
+        height: 512,
+        width: 512,
         child: SfCircularChart(
           title: ChartTitle(
               text: 'État',

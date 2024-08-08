@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rakcha/common/constants/MyColors.dart';
+import 'package:rakcha/common/utils/GneratePdf.dart';
 import 'package:rakcha/features/home/presentaion/screens/FormulairScreen.dart';
 import 'package:rakcha/features/home/presentaion/screens/HistroyPlantScreen.dart';
 
@@ -135,9 +136,10 @@ class _PlantCardState extends State<PlantCard> {
                 itemBuilder: (context) {
                   return [
                     PopupMenuItem(
-                        onTap: () => generateQRCode(context, widget.plant, () {
-                              Navigator.pop(context);
-                            }),
+                        onTap: () => exportToPDF(context, widget.plant) ,
+                        //generateQRCode(context, widget.plant, () {
+                          //    Navigator.pop(context);
+                            //}),
                         child: Text(
                           "Imprimer",
                           style: Theme.of(context).textTheme.bodyLarge,
