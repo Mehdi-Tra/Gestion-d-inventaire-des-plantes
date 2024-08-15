@@ -1,4 +1,5 @@
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -105,6 +106,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             },
             icon: Icon(
               Icons.account_circle_outlined,
+              size: 32,
               color: Theme.of(context).iconTheme.color,
             ),
           ),
@@ -117,7 +119,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget searchBar() {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.05,
+      // height: MediaQuery.of(context).size.height * 0.05,
       width: MediaQuery.of(context).size.width,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: SearchAnchor(
@@ -148,7 +150,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             ),
             trailing: [
               if (!_visibleClearIcon)
-                Tooltip(
+                if (!Platform.isWindows)Tooltip(
                   message: "QR Scanner",
                   child: IconButton(
                     onPressed: () async {

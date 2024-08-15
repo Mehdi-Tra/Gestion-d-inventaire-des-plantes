@@ -1,5 +1,3 @@
-
-
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +9,8 @@ class HistoryPlant extends StatefulWidget {
   final GlobalKey<ScaffoldState> scaffoldKey;
   final String label;
 
-  const HistoryPlant({required this.scaffoldKey, required this.label, super.key});
+  const HistoryPlant(
+      {required this.scaffoldKey, required this.label, super.key});
 
   @override
   State<HistoryPlant> createState() => _HistoryPlantState();
@@ -56,7 +55,8 @@ class _HistoryPlantState extends State<HistoryPlant> {
     );
   }
 
-  Stream<List<QueryDocumentSnapshot>> fetchHistoryPlanteDocuments(String label) {
+  Stream<List<QueryDocumentSnapshot>> fetchHistoryPlanteDocuments(
+      String label) {
     return _firestore
         .collection('historyPlante')
         .where("label", isEqualTo: label)
@@ -76,55 +76,55 @@ class _HistoryPlantState extends State<HistoryPlant> {
   }
 
   Widget dateFilter() {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 32),
-    child: StreamBuilder<Set<String>>(
-      stream: fetchAvailableDates(widget.label),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        }
-        if (snapshot.hasError) {
-          return Text("Error: ${snapshot.error}");
-        }
-        if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Text("No available dates");
-        }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 32),
+      child: StreamBuilder<Set<String>>(
+        stream: fetchAvailableDates(widget.label),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator();
+          }
+          if (snapshot.hasError) {
+            return Text("Error: ${snapshot.error}");
+          }
+          if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return const Text("No available dates");
+          }
 
-        final availableDates = snapshot.data!.toList();
-        availableDates.insert(0, "Tout les date");
+          final availableDates = snapshot.data!.toList();
+          availableDates.insert(0, "Tout les date");
 
-        return DropdownButton<String>(
-              dropdownColor: const Color.fromARGB(155, 0, 21, 24),
+          return DropdownButton<String>(
+            dropdownColor: const Color.fromARGB(155, 0, 21, 24),
+            value: selectedDate ?? "Tout les date",
+            hint: const Text(
+              "Select a date",
+              style: TextStyle(color: MyColors.primeryColor),
+            ),
+            items: availableDates.map((date) {
+              return DropdownMenuItem(
+                value: date,
+                child:
+                    Text(date, style: Theme.of(context).textTheme.labelLarge),
+              );
+            }).toList(),
+            onChanged: (value) {
+              setState(() {
+                if (value == "Tout les date") {
+                  selectedDate = null; // No date filter
+                } else {
+                  selectedDate = value;
+                }
+              });
+            },
+          );
+        },
+      ),
+    );
+  }
 
-          value: selectedDate ?? "Tout les date",
-          hint: const Text(
-            "Select a date",
-            style: TextStyle(color: MyColors.primeryColor),
-          ),
-          items: availableDates.map((date) {
-            return DropdownMenuItem(
-              value: date,
-              child: Text(date, style: Theme.of(context).textTheme.labelLarge),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              if (value == "Tout les date") {
-                selectedDate = null; // No date filter
-              } else {
-                selectedDate = value;
-              }
-            });
-          },
-        );
-      },
-    ),
-  );
-}
-
-
-  Stream<Map<String, List<QueryDocumentSnapshot>>> groupDocumentsByDate(String label) {
+  Stream<Map<String, List<QueryDocumentSnapshot>>> groupDocumentsByDate(
+      String label) {
     return fetchHistoryPlanteDocuments(label).map((docs) {
       final filteredDocs = selectedDate == null
           ? docs
@@ -176,21 +176,25 @@ class _HistoryPlantState extends State<HistoryPlant> {
                 children: [
                   Text(
                     date,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   ...docs.map((doc) {
                     Timestamp timestamp = doc['date'];
                     DateTime dateTime = timestamp.toDate();
-                    String formattedTime = DateFormat('HH:mm:ss').format(dateTime);
+                    String formattedTime =
+                        DateFormat('HH:mm:ss').format(dateTime);
 
                     return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 8),
                       child: RichText(
                         text: TextSpan(
-                          text: "${doc["description"]} le ",
-                          children: [
-                            TextSpan(text: formattedTime, style: Theme.of(context).textTheme.labelLarge),
-                          ],
+                          //text: "${doc["description"]} le ",
+                          children:
+                              //TextSpan(text: formattedTime, style: Theme.of(context).textTheme.labelLarge),
+                              _buildDescriptionSpans(
+                                  doc["description"], formattedTime, context),
                         ),
                       ),
                     );
@@ -204,5 +208,49 @@ class _HistoryPlantState extends State<HistoryPlant> {
     );
   }
 
+  List<TextSpan> _buildDescriptionSpans(
+      String description, String formattedTime, BuildContext context) {
+    List<TextSpan> spans = [];
+    int start = 0;
 
+    while (start < description.length) {
+      int modifierIndex = description.indexOf('(Modifier)', start);
+      if (modifierIndex == -1) {
+        // Pas d'autres "(Modifier)", ajoute le reste du texte
+        spans.add(TextSpan(
+          text: description.substring(start),
+          //style: Theme.of(context).textTheme.labelLarge
+        ));
+        break;
+      }
+
+      // Ajoute le texte avant "(Modifier)"
+      if (modifierIndex > start) {
+        spans.add(TextSpan(
+          text: description.substring(start, modifierIndex),
+          //style: Theme.of(context).textTheme.labelLarge
+        ));
+      }
+
+      // Ajoute "(Modifier)" en vert
+      spans.add(TextSpan(
+          text: '(Modifier)', style: Theme.of(context).textTheme.labelLarge));
+
+      // Met à jour l'index de départ
+      start = modifierIndex + '(Modifier)'.length;
+    }
+
+    // Ajoute l'heure à la fin du texte
+    spans.add(TextSpan(
+        text: " le ",
+        //style: Theme.of(context).textTheme.labelLarge,
+        children: [
+          TextSpan(
+            text: "$formattedTime",
+            style: Theme.of(context).textTheme.labelLarge,
+          )
+        ]));
+
+    return spans;
+  }
 }

@@ -1,40 +1,31 @@
-import 'package:device_preview/device_preview.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:rakcha/app.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'config/firebase_options.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   bool? initRoot = await getInitRoot();
 
   if (initRoot == null) {
-    runApp(DevicePreview(
-      enabled: true,
-      tools: const [
-        ...DevicePreview.defaultTools,
-      ],
-      builder: (context) => const MyApp(initroot: false),
-    ));
+    runApp(
+      const MyApp(initroot: false),
+    );
   } else {
     if (initRoot == false) {
-      runApp(DevicePreview(
-        enabled: true,
-        tools: const [
-          ...DevicePreview.defaultTools,
-        ],
-        builder: (context) => const MyApp(initroot: false),
-      ));
+      runApp(
+        const MyApp(initroot: false),
+      );
     } else {
-      runApp(DevicePreview(
-        enabled: true,
-        tools: const [
-          ...DevicePreview.defaultTools,
-        ],
-        builder: (context) => const MyApp(initroot: true),
-      ));
+      runApp(
+        const MyApp(initroot: true),
+      );
     }
   }
 }

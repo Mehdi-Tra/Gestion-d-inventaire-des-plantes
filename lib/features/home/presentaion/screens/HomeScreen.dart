@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -161,8 +162,8 @@ class _HomescreenState extends State<Homescreen> {
             Expanded(
               child: Row(
                 children: [
-                  Expanded(flex: 10, child: listPlantFireStore()),
-                  Expanded(flex: 1, child: alphabetScrollbar()),
+                  Expanded(child: listPlantFireStore()),
+                  if(!Platform.isWindows)alphabetScrollbar(),
                 ],
               ),
             ),
@@ -174,7 +175,8 @@ class _HomescreenState extends State<Homescreen> {
 
   Widget alphabetScrollbar() {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 20),
+      width: 32,
+      margin: const EdgeInsets.symmetric(vertical: 16),
       child: ListView.builder(
         itemCount: alphabet.length,
         itemBuilder: (context, index) {
@@ -209,7 +211,7 @@ class _HomescreenState extends State<Homescreen> {
       width: double.infinity,
       child: Row(
         mainAxisSize: MainAxisSize.max,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
           IconButton(
             onPressed: () {
@@ -221,10 +223,11 @@ class _HomescreenState extends State<Homescreen> {
             },
             icon: Icon(
               Icons.account_circle_outlined,
+              size: 32,
               color: Theme.of(context).iconTheme.color,
             ),
           ),
-          searchBar(),
+          Expanded(child: searchBar()),
         ],
       ),
     );
@@ -232,9 +235,9 @@ class _HomescreenState extends State<Homescreen> {
 
   Widget searchBar() {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.05,
-      width: MediaQuery.of(context).size.width * 0.8,
-      margin: const EdgeInsets.only(right: 16),
+      // height: MediaQuery.of(context).size.height * 0.05,
+      // width: MediaQuery.of(context).size.width * 0.8,
+      //margin: const EdgeInsets.only(right: 16),
       child: SearchAnchor(
         builder: (BuildContext context, SearchController controller) {
           return SearchBar(
@@ -324,95 +327,96 @@ class _HomescreenState extends State<Homescreen> {
                     },
                   ),
                 ),
-              Tooltip(
-                message: "QR Scanner",
-                child: IconButton(
-                  onPressed: () async {
-                    String qrResult = await scanQrCode();
+              if (!Platform.isWindows)
+                Tooltip(
+                  message: "QR Scanner",
+                  child: IconButton(
+                    onPressed: () async {
+                      String qrResult = await scanQrCode();
 
-                    if (qrResult != '-1') {
-                      _searchQuery = qrResult;
-                    } else {
-                      log(qrResult);
-                    }
+                      if (qrResult != '-1') {
+                        _searchQuery = qrResult;
+                      } else {
+                        log(qrResult);
+                      }
 
-                    QuerySnapshot<Map<String, dynamic>> fetchedPlant =
-                        await _firestore
-                            .collection("plante")
-                            .where("identifiant", isEqualTo: _searchQuery)
-                            .get();
+                      QuerySnapshot<Map<String, dynamic>> fetchedPlant =
+                          await _firestore
+                              .collection("plante")
+                              .where("identifiant", isEqualTo: _searchQuery)
+                              .get();
 
-                    if (fetchedPlant.docs.isNotEmpty) {
-                      Plant plant =
-                          Plant.fromFirestore(fetchedPlant.docs.first.data());
+                      if (fetchedPlant.docs.isNotEmpty) {
+                        Plant plant =
+                            Plant.fromFirestore(fetchedPlant.docs.first.data());
 
-                      showDialog(
-                          context: context,
-                          builder: (context) {
-                            return AlertDialog(
-                              title: Text(
-                                  "Options pour la plante ${plant.identifiant}"),
-                              actions: [
-                                TextButton(
-                                    onPressed: () {
-                                      generateQRCode(context, plant, () {
-                                        // Navigator.pushNamedAndRemoveUntil(context, '/lobby', (_)=>false);
+                        showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AlertDialog(
+                                title: Text(
+                                    "Options pour la plante ${plant.identifiant}"),
+                                actions: [
+                                  TextButton(
+                                      onPressed: () {
+                                        generateQRCode(context, plant, () {
+                                          // Navigator.pushNamedAndRemoveUntil(context, '/lobby', (_)=>false);
+                                          Navigator.pop(context);
+                                          Navigator.pop(context);
+                                        });
+                                      },
+                                      child: const Text("Imprimer")),
+                                  TextButton(
+                                      onPressed: () {
                                         Navigator.pop(context);
+
+                                        widget.changeCurrentScreen(
+                                            Formulairscreen(
+                                          isModifie: true,
+                                          scaffoldKey: widget.scaffoldKey,
+                                          changeCurrentScreen:
+                                              widget.changeCurrentScreen,
+                                          plant: plant,
+                                        ));
+                                      },
+                                      child: const Text("Modifier")),
+                                  TextButton(
+                                      onPressed: () {
                                         Navigator.pop(context);
-                                      });
-                                    },
-                                    child: const Text("Imprimer")),
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
 
-                                      widget
-                                          .changeCurrentScreen(Formulairscreen(
-                                        isModifie: true,
-                                        scaffoldKey: widget.scaffoldKey,
-                                        changeCurrentScreen:
-                                            widget.changeCurrentScreen,
-                                        plant: plant,
-                                      ));
-                                    },
-                                    child: const Text("Modifier")),
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    HistoryPlant(
+                                                        scaffoldKey:
+                                                            widget.scaffoldKey,
+                                                        label: plant
+                                                            .identifiant)));
+                                      },
+                                      child: const Text("Historique")),
+                                ],
+                              );
+                            });
 
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  HistoryPlant(
-                                                      scaffoldKey:
-                                                          widget.scaffoldKey,
-                                                      label:
-                                                          plant.identifiant)));
-                                    },
-                                    child: const Text("Historique")),
-                              ],
-                            );
-                          });
-
-                      // widget.changeCurrentScreen(Formulairscreen(
-                      //   scaffoldKey: widget.scaffoldKey,
-                      //   isModifie: true,
-                      //   changeCurrentScreen: widget.changeCurrentScreen,
-                      //   plant: plant,
-                      // ));
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Plante n'existe pas")),
-                      );
-                    }
-                  },
-                  icon: Icon(
-                    Icons.qr_code_2_outlined,
-                    color: Theme.of(context).scaffoldBackgroundColor,
+                        // widget.changeCurrentScreen(Formulairscreen(
+                        //   scaffoldKey: widget.scaffoldKey,
+                        //   isModifie: true,
+                        //   changeCurrentScreen: widget.changeCurrentScreen,
+                        //   plant: plant,
+                        // ));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Plante n'existe pas")),
+                        );
+                      }
+                    },
+                    icon: Icon(
+                      Icons.qr_code_2_outlined,
+                      color: Theme.of(context).scaffoldBackgroundColor,
+                    ),
                   ),
                 ),
-              ),
               if (_visibleClearIcon)
                 IconButton(
                   icon: Icon(

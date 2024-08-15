@@ -62,6 +62,10 @@ dependencies:
   path_provider: ^2.0.15
 
 
+  #pdf
+  pdf: ^3.8.4
+
+
   #
   collection: ^1.15.0
   intl: ^0.19.0
