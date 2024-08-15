@@ -1,0 +1,24 @@
+# ninja log v5
+4363	4439	7444826015113782	A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-configure	7f925cbdca8311e5
+20	133	7444825971910136	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-mkdir	2f92a40b79235c34
+4192	4258	7444826013264236	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-update	39b6b05279fbe0a3
+20	133	7444825971910136	A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-mkdir	2f92a40b79235c34
+133	4192	7444826012639964	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-download	d3799b0943c9c27
+133	4192	7444826012639964	A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-download	d3799b0943c9c27
+4192	4258	7444826013264236	A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-update	39b6b05279fbe0a3
+4259	4304	7444826013765564	A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-patch	ddc819b9422ea624
+4259	4304	7444826013765564	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-patch	ddc819b9422ea624
+4304	4363	7444826014347215	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-copyfile	ace4db4abde1aeca
+4304	4363	7444826014347215	A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-src/nuget.exe	ace4db4abde1aeca
+4304	4363	7444826014347215	A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-copyfile	ace4db4abde1aeca
+4363	4439	7444826015113782	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-configure	7f925cbdca8311e5
+4439	4511	7444826015746672	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-build	6ae182469fbc0de7
+4575	4647	7444826017160433	A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-test	edcb2773c12080b
+4439	4511	7444826015746672	A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-build	6ae182469fbc0de7
+4511	4575	7444826016476449	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-install	e9809111b0417a35
+4511	4575	7444826016476449	A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-install	e9809111b0417a35
+4575	4647	7444826017160433	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-test	edcb2773c12080b
+4647	4735	7444826017964202	CMakeFiles/nuget-populate-complete	f419da17d663801a
+4647	4735	7444826017964202	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-done	f419da17d663801a
+4647	4735	7444826017964202	A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/nuget-populate-complete	f419da17d663801a
+4647	4735	7444826017964202	A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-done	f419da17d663801a

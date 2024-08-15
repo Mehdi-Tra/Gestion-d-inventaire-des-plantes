@@ -1,0 +1,49 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/nuget-populate"
+		},
+		{
+			"file" : "A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/nuget-populate.rule"
+		},
+		{
+			"file" : "A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/nuget-populate-complete.rule"
+		},
+		{
+			"file" : "A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-build.rule"
+		},
+		{
+			"file" : "A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-configure.rule"
+		},
+		{
+			"file" : "A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-copyfile.rule"
+		},
+		{
+			"file" : "A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-download.rule"
+		},
+		{
+			"file" : "A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-install.rule"
+		},
+		{
+			"file" : "A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-mkdir.rule"
+		},
+		{
+			"file" : "A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-patch.rule"
+		},
+		{
+			"file" : "A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-test.rule"
+		},
+		{
+			"file" : "A:/dev/Apps/rakcha/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"nuget-populate"
+		],
+		"name" : "nuget-populate"
+	}
+}

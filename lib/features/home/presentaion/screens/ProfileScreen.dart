@@ -39,6 +39,36 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> chnageCapacite(int newCap) async {
+    // try {
+    //   QuerySnapshot querySnapshot =
+    //       await _firestore.collection('profile').get();
+    //   if (querySnapshot.docs.isNotEmpty) {
+    //     DocumentSnapshot doc = querySnapshot.docs.first;
+    //     DocumentReference docRef = doc.reference;
+
+    //     await _firestore.runTransaction((transaction) async {
+    //       DocumentSnapshot freshSnapshot = await transaction.get(docRef);
+    //       if (freshSnapshot.exists) {
+    //         transaction.update(docRef, {"qantite": newCap});
+    //         setState(() {
+    //           quantiteMax = newCap;
+    //         });
+    //       } else {
+    //         log('Document does not exist');
+    //       }
+    //     });
+
+    //     await addHistoryEntry(
+    //       "modification de capacite",
+    //       "modifier la capacite au $newCap",
+    //     );
+    //   }
+
+    //   log('Capacite updated successfully');
+    // } catch (e) {
+    //   log('Error updating capacite: $e');
+    // }
+
     try {
       QuerySnapshot querySnapshot =
           await _firestore.collection('profile').get();
@@ -46,25 +76,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
         DocumentSnapshot doc = querySnapshot.docs.first;
         DocumentReference docRef = doc.reference;
 
-        await _firestore.runTransaction((transaction) async {
-          DocumentSnapshot freshSnapshot = await transaction.get(docRef);
-          if (freshSnapshot.exists) {
-            transaction.update(docRef, {"qantite": newCap});
-            setState(() {
-              quantiteMax = newCap;
-            });
-          } else {
-            log('Document does not exist');
-          }
+        // Directly update the document without using a transaction
+        await docRef.update({"qantite": newCap});
+        setState(() {
+          quantiteMax = newCap;
         });
 
         await addHistoryEntry(
           "modification de capacite",
           "modifier la capacite au $newCap",
         );
-      }
 
-      log('Capacite updated successfully');
+        log('Capacite updated successfully');
+      } else {
+        log('No documents found in profile collection');
+      }
     } catch (e) {
       log('Error updating capacite: $e');
     }

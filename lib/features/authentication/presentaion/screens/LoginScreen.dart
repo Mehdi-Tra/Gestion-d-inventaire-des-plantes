@@ -1,5 +1,7 @@
 // ignore_for_file: file_names, non_constant_identifier_names
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../../../common/constants/MyColors.dart';
@@ -55,8 +57,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       children: [
                         Container(
-                          height: MediaQuery.of(context).size.height * 0.8,
-                          width: MediaQuery.of(context).size.width * 0.7,
+                          height: Platform.isWindows? 360: MediaQuery.of(context).size.height * 0.8,
+                          width: Platform.isWindows? 360:MediaQuery.of(context).size.width * 0.7,
                           child: fromAuth(context,_emailController,
                               _pwdController, _login, 'Login'),
                         ),
