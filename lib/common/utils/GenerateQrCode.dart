@@ -10,6 +10,7 @@ import 'package:rakcha/common/utils/GenerateExcel.dart';
 import 'package:rakcha/common/utils/PrintData.dart';
 
 import '../../features/home/data/model/Plante.dart';
+import 'GneratePdf.dart';
 
 void generateQRCode(BuildContext context, Plant plant, Function() navigate) {
   String formData = '''
@@ -77,7 +78,8 @@ void generateQRCode(BuildContext context, Plant plant, Function() navigate) {
         ),
         TextButton(
             onPressed: () {
-              selectAndPrint(context, formData);
+              exportToPDF(context, plant) ;
+              // selectAndPrint(context, formData);
             },
             child: const Text("Imprimer")),
         TextButton(

@@ -119,7 +119,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
 
   Widget searchBar() {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.05,
+      // height: MediaQuery.of(context).size.height * 0.05,
       width: MediaQuery.of(context).size.width,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: SearchAnchor(
