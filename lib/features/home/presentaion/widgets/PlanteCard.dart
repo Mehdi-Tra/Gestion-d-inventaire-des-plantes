@@ -136,10 +136,10 @@ class _PlantCardState extends State<PlantCard> {
                 itemBuilder: (context) {
                   return [
                     PopupMenuItem(
-                        onTap: () => exportToPDF(context, widget.plant) ,
-                        //generateQRCode(context, widget.plant, () {
-                          //    Navigator.pop(context);
-                            //}),
+                        onTap: () => 
+                        generateQRCode(context, widget.plant, () {
+                             Navigator.pop(context);
+                            }),
                         child: Text(
                           "Imprimer",
                           style: Theme.of(context).textTheme.bodyLarge,
